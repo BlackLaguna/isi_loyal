@@ -1,0 +1,98 @@
+version: "3"
+services:
+  nginx_partner:
+    build:
+      context: /isi_loyal_partner
+      dockerfile: .docker/NginxDockerfile
+    networks:
+      - partner_network
+    ports:
+      - "8080:80"
+    volumes:
+      - ./isi_loyal_partner/:/var/www/html/
+      - ./isi_loyal_partner/.docker/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php_partner
+      - postgres
+
+  php_partner:
+    build:
+      context: /isi_loyal_partner
+      dockerfile: ./.docker/PhpDockerfile
+    command: sh -c "make run && php-fpm -F"
+    networks:
+      - partner_network
+    volumes:
+      - ./isi_loyal_partner/:/var/www/html:delegated
+      - ./isi_loyal_partner/.docker/php-ini:/usr/local/etc/php/php.ini-development
+      - ./isi_loyal_partner/.docker/php-ini:/usr/local/etc/php/php.ini-production
+      - ./isi_loyal_partner/.docker/php-ini:/usr/local/etc/php/php.ini
+    environment:
+      environment:
+      MAILER_DSN: 'smtp://mailhog:1025'
+      CHOKIDAR_USEPOLLING: "true"
+    depends_on:
+      - postgres
+
+  nginx_client:
+    build:
+      context: /isi_loyal_client
+      dockerfile: .docker/NginxDockerfile
+    networks:
+      - client_network
+    ports:
+      - "8081:80"
+    volumes:
+      - ./isi_loyal_client/:/var/www/html/
+      - ./isi_loyal_client/.docker/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php_client
+      - postgres
+
+  php_client:
+    build:
+      context: /isi_loyal_client
+      dockerfile: ./.docker/PhpDockerfile
+    command: sh -c "make run && php-fpm -F"
+    networks:
+      - client_network
+    volumes:
+      - ./isi_loyal_client/:/var/www/html:delegated
+      - ./isi_loyal_client/.docker/php-ini:/usr/local/etc/php/php.ini-development
+      - ./isi_loyal_client/.docker/php-ini:/usr/local/etc/php/php.ini-production
+      - ./isi_loyal_client/.docker/php-ini:/usr/local/etc/php/php.ini
+    environment:
+      environment:
+      MAILER_DSN: 'smtp://mailhog:1025'
+      CHOKIDAR_USEPOLLING: "true"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    networks:
+      - internal
+      - partner_network
+      - client_network
+    environment:
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+
+  mailhog:
+    image: mailhog/mailhog
+    networks:
+      - internal
+      - partner_network
+      - client_network
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+networks:
+  internal:
+    driver: bridge
+  partner_network:
+    driver: bridge
+  client_network:
+    driver: bridge

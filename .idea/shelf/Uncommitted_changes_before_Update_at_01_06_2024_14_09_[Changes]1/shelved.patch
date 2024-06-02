@@ -1,0 +1,64 @@
+Index: .idea/phpspec.xml
+===================================================================
+diff --git a/.idea/phpspec.xml b/.idea/phpspec.xml
+deleted file mode 100644
+--- a/.idea/phpspec.xml	
++++ /dev/null	
+@@ -1,16 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="PHPSpec">
+-    <suites>
+-      <PhpSpecSuiteConfiguration>
+-        <option name="myPath" value="$PROJECT_DIR$" />
+-      </PhpSpecSuiteConfiguration>
+-      <PhpSpecSuiteConfiguration>
+-        <option name="myPath" value="$PROJECT_DIR$" />
+-      </PhpSpecSuiteConfiguration>
+-      <PhpSpecSuiteConfiguration>
+-        <option name="myPath" value="$PROJECT_DIR$" />
+-      </PhpSpecSuiteConfiguration>
+-    </suites>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/codeception.xml
+===================================================================
+diff --git a/.idea/codeception.xml b/.idea/codeception.xml
+deleted file mode 100644
+--- a/.idea/codeception.xml	
++++ /dev/null	
+@@ -1,12 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="Codeception">
+-    <option name="configurations">
+-      <list>
+-        <Configuration>
+-          <option name="path" value="$PROJECT_DIR$/tests" />
+-        </Configuration>
+-      </list>
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/dataSources.xml
+===================================================================
+diff --git a/.idea/dataSources.xml b/.idea/dataSources.xml
+deleted file mode 100644
+--- a/.idea/dataSources.xml	
++++ /dev/null	
+@@ -1,12 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+-    <data-source source="LOCAL" name="isi@localhost" uuid="0fa680ac-4efc-4ced-a223-f7c8d570390a">
+-      <driver-ref>postgresql</driver-ref>
+-      <synchronize>true</synchronize>
+-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+-      <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
+-      <working-dir>$ProjectFileDir$</working-dir>
+-    </data-source>
+-  </component>
+-</project>
+\ No newline at end of file

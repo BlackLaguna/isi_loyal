@@ -1,0 +1,19 @@
+FROM trafex/php-nginx:latest
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+USER root
+
+RUN apk add --no-cache \
+    php-bcmath \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    postgresql-dev \
+    git \
+    zip \
+    unzip \
+    sudo
+
+USER nobody
+
