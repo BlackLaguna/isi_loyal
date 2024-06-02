@@ -1,0 +1,24 @@
+auth:
+    resource:
+        path: ../src/Auth/Infrastructure/Controller/
+        namespace: Auth\Infrastructure\Controller
+    type: attribute
+
+invitation:
+    resource:
+        path: ../src/Invitation/Infrastructure/Controller/
+        namespace: Invitation\Infrastructure\Controller
+    type: attribute
+
+loyalty_program:
+    resource:
+        path: ../src/LoyaltyProgram/Infrastructure/Controller/
+        namespace: LoyaltyProgram\Infrastructure\Controller
+    type: attribute
+
+kernel:
+    resource: ../src/SharedKernel/Framework/Kernel.php
+    type: attribute
+
+api_login_check:
+    path: /api/login_check

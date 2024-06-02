@@ -1,0 +1,12 @@
+auth:
+    resource:
+        path: ../src/Auth/Infrastructure/Controller/
+        namespace: Auth\Infrastructure\Controller
+    type: attribute
+
+kernel:
+    resource: ../src/SharedKernel/Framework/Kernel.php
+    type: attribute
+
+api_login_check:
+    path: /api/login_check

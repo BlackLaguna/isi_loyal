@@ -1,0 +1,18 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Invitation\Domain\:
+        resource: '../../../src/Invitation/Domain/'
+
+    Invitation\Application\:
+        resource: '../../../src/Invitation/Application/'
+
+    Invitation\Infrastructure\:
+        resource: '../../../src/Invitation/Infrastructure/'
+
+    Invitation\Infrastructure\Controller\:
+        resource: '../../../src/Invitation/Infrastructure/Controller/'
+        tags: ['controller.service_arguments']
