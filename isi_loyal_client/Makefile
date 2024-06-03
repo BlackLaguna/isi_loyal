@@ -10,6 +10,8 @@ test:
 
 run:
 	composer install --no-interaction
+	sleep 10
+	php bin/console --env=dev doctrine:migration:migrate --no-interaction
 
 up:
 	docker compose up -d
