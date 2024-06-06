@@ -31,13 +31,13 @@ class DoctrineInvitationStatusType extends Type
     public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         return $value;
-        /** @var string $value */
-        return match($value) {
-            InvitationStatus::NEW->name => InvitationStatus::NEW,
-            InvitationStatus::SENT->name => InvitationStatus::SENT,
-            InvitationStatus::ACCEPTED->name => InvitationStatus::ACCEPTED,
-            InvitationStatus::REJECTED->name => InvitationStatus::REJECTED,
-        };
+//        /** @var string $value */
+//        return match($value) {
+//            InvitationStatus::NEW->name => InvitationStatus::NEW,
+//            InvitationStatus::SENT->name => InvitationStatus::SENT,
+//            InvitationStatus::ACCEPTED->name => InvitationStatus::ACCEPTED,
+//            InvitationStatus::REJECTED->name => InvitationStatus::REJECTED,
+//        };
     }
 
     public function getName(): string

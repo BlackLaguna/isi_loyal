@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Auth\Domain;
 
+use Auth\Domain\Exception\InvitationAlreadyUsedException;
 use Auth\Domain\Exception\UserNotFoundException;
 use Auth\Domain\Service\CheckIfEmailAlreadyRegistered;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,11 +30,15 @@ class Invitation
     #[Embedded(class: ClientEmail::class, columnPrefix: false)]
     private ClientEmail $clientEmail;
 
-    /** @throws UserNotFoundException */
+    /** @throws InvitationAlreadyUsedException */
     public function acceptInvitation(
         CheckIfEmailAlreadyRegistered $checkIfEmailAlreadyRegistered,
         ClientRepository $clientRepository
     ): void {
+        if (in_array($this->invitationStatus, [InvitationStatus::ACCEPTED, InvitationStatus::REJECTED])) {
+            throw new InvitationAlreadyUsedException();
+        }
+
         if (($checkIfEmailAlreadyRegistered)($this->clientEmail->email)) {
             $client = $clientRepository->getUserByEmail($this->clientEmail->email);
         } else {
