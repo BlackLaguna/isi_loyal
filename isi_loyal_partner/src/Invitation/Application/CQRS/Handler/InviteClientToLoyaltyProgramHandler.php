@@ -35,7 +35,7 @@ readonly class InviteClientToLoyaltyProgramHandler
             $command->client,
             $this->clientInvitationChecker,
         );
-        $invitation->sendEmailToUser($this->sendInvitationToClientEmail);
         $this->invitationRepository->save($invitation);
+        $invitation->sendEmailToUser($this->sendInvitationToClientEmail);
     }
 }

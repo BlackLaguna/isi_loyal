@@ -40,7 +40,6 @@ class Invitation
         #[Embedded(class: ClientEmail::class, columnPrefix: false)]
         private ClientEmail $clientEmail,
     ) {
-        $this->uuid = Uuid::v4();
     }
 
     /**
