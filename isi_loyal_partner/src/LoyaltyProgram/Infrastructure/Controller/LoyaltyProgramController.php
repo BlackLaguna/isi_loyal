@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace LoyaltyProgram\Infrastructure\Controller;
 
+use LoyaltyProgram\Application\CQRS\Command\AddLoyaltyLevelToLoyaltyProgramCommand;
 use LoyaltyProgram\Application\CQRS\Command\CreateLoyaltyProgramCommand;
 use LoyaltyProgram\Application\CQRS\Query\GetLoyaltyProgramQuery;
 use LoyaltyProgram\Domain\LoyaltyProgram;
 use LoyaltyProgram\Domain\Partner;
+use LoyaltyProgram\Infrastructure\Controller\ArgumentResolver\LoyaltyProgramValueResolver;
 use LoyaltyProgram\Infrastructure\Controller\ArgumentResolver\PartnerValueResolver;
+use LoyaltyProgram\Infrastructure\Controller\Request\AddLoyaltyLevelRequest;
 use LoyaltyProgram\Infrastructure\Controller\Request\CreateLoyaltyProgramRequest;
 use SharedKernel\Application\Bus\QueryBus;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,15 +39,22 @@ final class LoyaltyProgramController extends AbstractController
         return new JsonResponse(['loyaltyProgram' => $loyaltyProgram], Response::HTTP_CREATED);
     }
 
-    #[Route('/loyalty_programs/{loyalty_program_uuid}/loyalty_program_level', name: 'add_loyalty_level', methods: ['POST'])]
+    #[Route('/loyalty_programs/{loyalty_program_uuid}/loyalty_program_levels', name: 'add_loyalty_level', methods: ['POST'])]
     public function add(
-        #[MapRequestPayload(acceptFormat: 'json')] CreateLoyaltyProgramRequest $request,
-        #[ValueResolver(Partner::class)] Partner $partner,
+        #[MapRequestPayload(acceptFormat: 'json')] AddLoyaltyLevelRequest $request,
+        #[ValueResolver(PartnerValueResolver::class)] Partner $partner,
+        #[ValueResolver(LoyaltyProgramValueResolver::class)] LoyaltyProgram $loyaltyProgram,
         MessageBusInterface $commandBus,
-        QueryBus $queryBus,
     ): JsonResponse {
-        $commandBus->dispatch(new CreateLoyaltyProgramCommand($partner, $request->loyaltyProgramName));
-        $loyaltyProgram = $queryBus->dispatch(new CreateLoyaltyProgramCommand($partner, $request->loyaltyProgramName));
+        if (!$loyaltyProgram->isOwnedBy($partner)) {
+            throw $this->createNotFoundException();
+        }
+
+        $commandBus->dispatch(new AddLoyaltyLevelToLoyaltyProgramCommand(
+            $loyaltyProgram,
+            $request->loyaltyLevelName,
+            $request->valueFactor,
+        ));
 
         return new JsonResponse(['loyaltyProgram' => $loyaltyProgram], Response::HTTP_CREATED);
     }

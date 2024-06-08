@@ -10,7 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use LoyaltyProgram\Domain\Exception\LoyaltyLevelAlreadyExists;
 use LoyaltyProgram\Domain\LoyaltyLevel\LoyaltyLevel;
+use LoyaltyProgram\Domain\LoyaltyLevel\ValueFactor;
 use LoyaltyProgram\Domain\Service\IsPartnerAlreadyHasLoyaltyProgramWithSameName;
+use LoyaltyProgram\Domain\Service\RecalculateClientsLoyaltyLevels;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\AbstractUid;
 
@@ -54,8 +56,13 @@ class LoyaltyProgram implements JsonSerializable
     }
 
     /** @throws LoyaltyLevelAlreadyExists */
-    public function addLoyaltyLevel(LoyaltyLevel $loyaltyLevel): void
-    {
+    public function addLoyaltyLevel(
+        ValueFactor $valueFactor,
+        RecalculateClientsLoyaltyLevels $recalculateClientsLoyaltyLevels
+    ): void {
+        $loyaltyLevel = new LoyaltyLevel();
+        $loyaltyLevel->setValueFactor($valueFactor);
+
         $isLoyaltyLevelAlreadyExists = $this->loyaltyProgramLevels->exists(
             static function (int $key, LoyaltyLevel $loyaltyLevelEntry) use ($loyaltyLevel) {
                 return $loyaltyLevel->isEqual($loyaltyLevelEntry);
@@ -64,6 +71,13 @@ class LoyaltyProgram implements JsonSerializable
         if ($isLoyaltyLevelAlreadyExists) {
             throw new LoyaltyLevelAlreadyExists();
         }
+
+        $this->loyaltyProgramLevels->add($loyaltyLevel);
+    }
+
+    public function isOwnedBy(Partner $partner): bool
+    {
+        return $this->partner->isEqual($partner);
     }
 
     public function jsonSerialize(): array

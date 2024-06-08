@@ -22,8 +22,8 @@ class LoyaltyLevel
     #[ORM\ManyToOne(targetEntity: LoyaltyProgram::class, cascade: ['PERSIST', 'REMOVE'], inversedBy: 'loyaltyProgramLevels')]
     public LoyaltyProgram $loyaltyProgram;
 
-    #[ORM\Embedded(class: LoyaltyLevelInterval::class)]
-    public LoyaltyLevelInterval $interval;
+    #[ORM\Embedded(class: ValueFactor::class)]
+    public ValueFactor $valueFactor;
 
     public function __construct()
     {
@@ -31,6 +31,12 @@ class LoyaltyLevel
 
     public function isEqual(self $loyaltyLevel): bool
     {
-        return $this->id === $loyaltyLevel->id;
+        return $this->id === $loyaltyLevel->id
+            && $this->valueFactor->isEqual($loyaltyLevel->valueFactor);
+    }
+
+    public function setValueFactor(ValueFactor $valueFactor): void
+    {
+        $this->valueFactor = $valueFactor;
     }
 }
