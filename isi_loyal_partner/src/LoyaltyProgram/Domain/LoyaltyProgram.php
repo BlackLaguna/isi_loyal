@@ -167,7 +167,7 @@ class LoyaltyProgram implements JsonSerializable
         return [
             'id' => (string) $this->id,
             'name' => $this->name,
-            'loyalty_levels' => $this->loyaltyProgramLevels->toArray()
+            'loyaltyLevels' => $this->loyaltyProgramLevels->toArray()
         ];
     }
 }

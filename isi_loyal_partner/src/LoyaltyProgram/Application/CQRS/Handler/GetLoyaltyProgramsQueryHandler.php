@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace LoyaltyProgram\Application\CQRS\Handler;
 
 
-use LoyaltyProgram\Application\CQRS\Query\GetLoyaltyProgramQuery;
 use LoyaltyProgram\Application\CQRS\Query\GetLoyaltyProgramsQuery;
 use LoyaltyProgram\Application\CQRS\Query\View\GetLoyaltyProgramsView;
-use LoyaltyProgram\Domain\LoyaltyProgram;
 use LoyaltyProgram\Domain\LoyaltyProgramRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
