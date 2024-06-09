@@ -17,6 +17,17 @@ class DoctrineInvitationStatusType extends Type
         return self::NAME;
     }
 
+    //    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+//    {
+//        /** @var string $value */
+//        return match($value) {
+//            InvitationStatus::NEW->name => InvitationStatus::NEW,
+//            InvitationStatus::SENT->name => InvitationStatus::SENT,
+//            InvitationStatus::ACCEPTED->name => InvitationStatus::ACCEPTED,
+//            InvitationStatus::REJECTED->name => InvitationStatus::REJECTED,
+//        };
+//    }
+
     public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         return $value;

@@ -4,6 +4,12 @@ auth:
         namespace: Auth\Infrastructure\Controller
     type: attribute
 
+statistics:
+    resource:
+        path: ../src/Statistic/Infrastructure/
+        namespace: Statistic\Infrastructure
+    type: attribute
+
 kernel:
     resource: ../src/SharedKernel/Framework/Kernel.php
     type: attribute

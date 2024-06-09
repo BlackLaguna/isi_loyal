@@ -7,23 +7,24 @@ namespace LoyaltyProgram\Application\CQRS\Handler;
 use LoyaltyProgram\Application\CQRS\Command\AddLoyaltyLevelToLoyaltyProgramCommand;
 use LoyaltyProgram\Domain\Exception\LoyaltyLevelAlreadyExists;
 use LoyaltyProgram\Domain\LoyaltyLevel\ValueFactor;
-use LoyaltyProgram\Domain\Service\RecalculateClientsLoyaltyLevels;
+use LoyaltyProgram\Domain\LoyaltyProgramRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 readonly class AddLoyaltyLevelToLoyaltyProgramCommandHandler
 {
     public function __construct(
-        private RecalculateClientsLoyaltyLevels $recalculateClientsLoyaltyLevels,
+        public LoyaltyProgramRepository $loyaltyProgramRepository,
     ) {
     }
 
     /** @throws LoyaltyLevelAlreadyExists */
     public function __invoke(AddLoyaltyLevelToLoyaltyProgramCommand $command): void
     {
-        $command->loyaltyProgram->addLoyaltyLevel(
-            new ValueFactor($command->loyaltyLevelValueFactor),
-            $this->recalculateClientsLoyaltyLevels,
+        $command->loyaltyProgram->addNewLoyaltyLevel(
+            ValueFactor::createFromInt($command->loyaltyLevelValueFactor),
+            $command->loyaltyLevelName,
         );
+        $this->loyaltyProgramRepository->persist($command->loyaltyProgram);
     }
 }

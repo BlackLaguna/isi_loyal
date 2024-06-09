@@ -36,10 +36,26 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Invitation/Domain'
                 prefix: Invitation\Domain\
                 alias: Invitation\Domain
+            ClientPurchases:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/ClientPurchases/Domain'
+                prefix: ClientPurchases\Domain\
+                alias: ClientPurchases\Domain
+            Promocodes:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Promocodes/Domain'
+                prefix: Promocodes\Domain\
+                alias: Promocodes\Domain
         schema_ignore_classes:
             - 'LoyaltyProgram\Domain\Partner'
             - 'Invitation\Domain\Partner'
             - 'Invitation\Domain\LoyaltyProgram'
+            - 'ClientPurchases\Domain\Client'
+            - 'ClientPurchases\Domain\LoyaltyProgram'
+            - 'ClientPurchases\Domain\Partner'
+            - 'ClientPurchases\Domain\LoyaltyProgramClient'
 
 when@test:
     doctrine:

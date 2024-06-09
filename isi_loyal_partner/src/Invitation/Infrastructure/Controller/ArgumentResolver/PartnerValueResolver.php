@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 final readonly class PartnerValueResolver implements ValueResolverInterface
 {
-    public function __construct(private Security $security, private EntityManagerInterface $invitationEntityManager)
+    public function __construct(private Security $security, private EntityManagerInterface $entityManager)
     {
     }
 
@@ -25,7 +25,7 @@ final readonly class PartnerValueResolver implements ValueResolverInterface
             return [];
         }
 
-        $partner = $this->invitationEntityManager
+        $partner = $this->entityManager
             ->getRepository(Partner::class)
             ->find($this->security->getUser()->getUserIdentifier());
 

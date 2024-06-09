@@ -1,0 +1,22 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    ClientPurchases\Domain\:
+        resource: '../../../src/ClientPurchases/Domain/'
+
+    ClientPurchases\Application\:
+        resource: '../../../src/ClientPurchases/Application/'
+
+    ClientPurchases\Infrastructure\:
+        resource: '../../../src/ClientPurchases/Infrastructure/'
+
+    ClientPurchases\Infrastructure\Controller\:
+        resource: '../../../src/ClientPurchases/Infrastructure/Controller/'
+        tags: ['controller.service_arguments']
+
+#    Auth\Framework\EventSubscriber\ExceptionSubscriber:
+#        tags:
+#            - { name: 'kernel.event_subscriber' }

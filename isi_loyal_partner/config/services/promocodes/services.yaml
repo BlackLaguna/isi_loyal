@@ -1,0 +1,22 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Promocodes\Domain\:
+        resource: '../../../src/Promocodes/Domain/'
+
+    Promocodes\Application\:
+        resource: '../../../src/Promocodes/Application/'
+
+    Promocodes\Infrastructure\:
+        resource: '../../../src/Promocodes/Infrastructure/'
+
+    Promocodes\Infrastructure\Controller\:
+        resource: '../../../src/Promocodes/Infrastructure/Controller/'
+        tags: ['controller.service_arguments']
+
+#    Auth\Framework\EventSubscriber\ExceptionSubscriber:
+#        tags:
+#            - { name: 'kernel.event_subscriber' }

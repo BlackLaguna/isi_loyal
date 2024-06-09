@@ -15,8 +15,18 @@ class ValueFactor
     ) {
     }
 
+    public static function createFromInt(int $valueFactor)
+    {
+        return new self($valueFactor);
+    }
+
     public function isEqual(self $valueFactor): bool
     {
         return $this->valueFactor === $valueFactor->valueFactor;
+    }
+
+    public function isGreaterOrEqual(self $valueFactor): bool
+    {
+        return $this->valueFactor >= $valueFactor->valueFactor;
     }
 }

@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final readonly class LoyaltyProgramValueResolver implements ValueResolverInterface
 {
-    public function __construct(private EntityManagerInterface $invitationEntityManager)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 
@@ -25,7 +25,7 @@ final readonly class LoyaltyProgramValueResolver implements ValueResolverInterfa
             return [];
         }
 
-        $loyaltyProgram = $this->invitationEntityManager
+        $loyaltyProgram = $this->entityManager
             ->getRepository(LoyaltyProgram::class)
             ->find($request->attributes->get('loyalty_program_uuid'));
 

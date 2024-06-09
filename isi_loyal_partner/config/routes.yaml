@@ -16,6 +16,18 @@ loyalty_program:
         namespace: LoyaltyProgram\Infrastructure\Controller
     type: attribute
 
+client_purchases:
+    resource:
+        path: ../src/ClientPurchases/Infrastructure/Controller/
+        namespace: ClientPurchases\Infrastructure\Controller
+    type: attribute
+
+promocodes:
+    resource:
+        path: ../src/Promocodes/Infrastructure/Controller/
+        namespace: Promocodes\Infrastructure\Controller
+    type: attribute
+
 kernel:
     resource: ../src/SharedKernel/Framework/Kernel.php
     type: attribute

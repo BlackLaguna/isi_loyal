@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Statistic\Infrastructure\:
+        resource: '../../../src/Statistic/Infrastructure/'
+        tags: ['controller.service_arguments']

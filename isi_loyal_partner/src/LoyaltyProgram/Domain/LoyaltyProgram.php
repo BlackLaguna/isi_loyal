@@ -9,10 +9,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use LoyaltyProgram\Domain\Exception\LoyaltyLevelAlreadyExists;
+use LoyaltyProgram\Domain\Exception\LoyaltyLevelNotExists;
 use LoyaltyProgram\Domain\LoyaltyLevel\LoyaltyLevel;
 use LoyaltyProgram\Domain\LoyaltyLevel\ValueFactor;
 use LoyaltyProgram\Domain\Service\IsPartnerAlreadyHasLoyaltyProgramWithSameName;
-use LoyaltyProgram\Domain\Service\RecalculateClientsLoyaltyLevels;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\AbstractUid;
 
@@ -33,12 +33,17 @@ class LoyaltyProgram implements JsonSerializable
     #[ORM\OneToMany(mappedBy: 'loyaltyProgram', targetEntity: LoyaltyLevel::class, cascade: ['PERSIST', 'REMOVE'])]
     private Collection $loyaltyProgramLevels;
 
+    #[ORM\OneToMany(mappedBy: 'loyaltyProgram', targetEntity: LoyaltyProgramClient::class, cascade: ['PERSIST', 'REMOVE'])]
+    #[ORM\JoinColumn(name: 'loyalty_program_client', nullable: false)]
+    private Collection $loyaltyProgramClients;
+
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
     public function __construct(Partner $partner, string $name)
     {
         $this->loyaltyProgramLevels = new ArrayCollection();
+        $this->loyaltyProgramClients = new ArrayCollection();
         $this->partner = $partner;
         $this->name = $name;
     }
@@ -56,12 +61,13 @@ class LoyaltyProgram implements JsonSerializable
     }
 
     /** @throws LoyaltyLevelAlreadyExists */
-    public function addLoyaltyLevel(
+    public function addNewLoyaltyLevel(
         ValueFactor $valueFactor,
-        RecalculateClientsLoyaltyLevels $recalculateClientsLoyaltyLevels
+        string $loyaltyLevelName
     ): void {
-        $loyaltyLevel = new LoyaltyLevel();
+        $loyaltyLevel = new LoyaltyLevel($loyaltyLevelName);
         $loyaltyLevel->setValueFactor($valueFactor);
+        $loyaltyLevel->assignLoyaltyProgram($this);
 
         $isLoyaltyLevelAlreadyExists = $this->loyaltyProgramLevels->exists(
             static function (int $key, LoyaltyLevel $loyaltyLevelEntry) use ($loyaltyLevel) {
@@ -73,6 +79,82 @@ class LoyaltyProgram implements JsonSerializable
         }
 
         $this->loyaltyProgramLevels->add($loyaltyLevel);
+        $this->recalculateLoyaltyLevels();
+    }
+
+    /**
+     * @throws LoyaltyLevelNotExists
+     */
+    public function editLoyaltyLevel(AbstractUid $loyaltyLevelUuid, ValueFactor $valueFactor, string $loyaltyLevelName): void
+    {
+        $isLoyaltyLevelExists = $this->loyaltyProgramLevels->exists(
+            static function (int $key, LoyaltyLevel $loyaltyLevelEntry) use ($loyaltyLevelUuid) {
+                return $loyaltyLevelEntry->isHaveThisId($loyaltyLevelUuid);
+            });
+
+        if (!$isLoyaltyLevelExists) {
+            throw new LoyaltyLevelNotExists();
+        }
+
+        /** @var LoyaltyLevel $loyaltyLevel */
+        $loyaltyLevel = $this->loyaltyProgramLevels->filter(
+            static function (LoyaltyLevel $loyaltyLevelEntry) use ($loyaltyLevelUuid) {
+                return $loyaltyLevelEntry->isHaveThisId($loyaltyLevelUuid);
+            }
+        )->first();
+
+        $loyaltyLevel->updateData($valueFactor, $loyaltyLevelName);
+
+        $this->recalculateLoyaltyLevels();
+    }
+
+    /**
+     * @throws LoyaltyLevelNotExists
+     */
+    public function deleteLoyaltyLevel(AbstractUid $loyaltyLevelUuid): void
+    {
+        $isLoyaltyLevelExists = $this->loyaltyProgramLevels->exists(
+            static function (int $key, LoyaltyLevel $loyaltyLevelEntry) use ($loyaltyLevelUuid) {
+                return $loyaltyLevelEntry->isHaveThisId($loyaltyLevelUuid);
+        });
+
+        if (!$isLoyaltyLevelExists) {
+            throw new LoyaltyLevelNotExists();
+        }
+
+        /** @var LoyaltyLevel $loyaltyLevel */
+        $loyaltyLevel = $this->loyaltyProgramLevels->filter(
+            static function (LoyaltyLevel $loyaltyLevelEntry) use ($loyaltyLevelUuid) {
+                return $loyaltyLevelEntry->isHaveThisId($loyaltyLevelUuid);
+            }
+        )->first();
+
+        $this->loyaltyProgramLevels->removeElement($loyaltyLevel);
+        $loyaltyLevel->unassignLoyaltyProgram();
+        $this->recalculateLoyaltyLevels();
+    }
+
+    private function recalculateLoyaltyLevels(): void
+    {
+        $loyaltyLevelIterator = $this->loyaltyProgramLevels->getIterator();
+
+        $loyaltyLevelIterator->uasort(function($a, $b) {
+            return $a->valueFactor <=> $b->valueFactor;
+        });
+
+        $this->loyaltyProgramLevels = new ArrayCollection(iterator_to_array($loyaltyLevelIterator));
+
+        /** @var LoyaltyProgramClient $loyaltyProgramClient */
+        foreach ($this->loyaltyProgramClients->getIterator() as $loyaltyProgramClient) {
+            $loyaltyProgramClient->updateLoyaltyLevel(null);
+
+            /** @var LoyaltyLevel $loyaltyProgramLevel */
+            foreach ($this->loyaltyProgramLevels->getIterator() as $loyaltyProgramLevel) {
+                if ($loyaltyProgramClient->valueFactor->isGreaterOrEqual($loyaltyProgramLevel->valueFactor)) {
+                    $loyaltyProgramClient->updateLoyaltyLevel($loyaltyProgramLevel);
+                }
+            }
+        }
     }
 
     public function isOwnedBy(Partner $partner): bool
@@ -85,6 +167,7 @@ class LoyaltyProgram implements JsonSerializable
         return [
             'id' => (string) $this->id,
             'name' => $this->name,
+            'loyalty_levels' => $this->loyaltyProgramLevels->toArray()
         ];
     }
 }

@@ -20,6 +20,11 @@ class DoctrineLoyaltyProgramRepository implements LoyaltyProgramRepository
         $this->loyaltyProgramRepository = $entityManager->getRepository(LoyaltyProgram::class);
     }
 
+    public function findAllForPartner(Partner $partner): array
+    {
+        return $this->loyaltyProgramRepository->findBy(['partner' => $partner]);
+    }
+
     public function findByPartnerAndName(Partner $partner, string $loyaltyProgramName): LoyaltyProgram
     {
         $loyaltyProgram = $this->loyaltyProgramRepository
