@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Promocodes\Domain;
 
+use JsonSerializable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\AbstractUid;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 #[ORM\Table(name: 'promocodes')]
 
-class Promocode
+class Promocode implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -41,5 +42,16 @@ class Promocode
         $this->type = $type;
         $this->valueFactor = $valueFactor;
         $this->status = 'NEW';
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'status' => $this->status,
+            'client_id' => $this->clientId,
+            'value_factor' => $this->valueFactor,
+            'type' => $this->type,
+        ];
     }
 }
